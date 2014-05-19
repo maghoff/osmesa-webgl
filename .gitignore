@@ -1,7 +1,8 @@
 build
 .lock-wscript
 npm-debug.log
-
 .idea
 Debug
 *.log
+MesaLib-*.tar.bz2
+Mesa-*
