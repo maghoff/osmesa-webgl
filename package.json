@@ -1,38 +1,34 @@
 {
-  "author": "Mikael Bourges-Sevenier <mikeseven@gmail.com>",
-  "name": "node-webgl",
-  "description": "WebGL bindings for node",
-  "version": "0.4.1",
+  "author": "Magnus Hoff <maghoff@gmail.com>",
+  "contributors": [
+    "Mikael Bourges-Sevenier <mikeseven@gmail.com>"
+  ],
+  "name": "osmesa-webgl",
+  "description": "WebGL for node, running on OSMesa",
+  "version": "0.3.0",
   "main": "index.js",
   "keywords": [
     "webgl",
-    "opengl"
+    "opengl",
+    "osmesa"
   ],
-  "engines": {
-    "node": ">=0.7.0"
-  },
-  "directories": {
-    "src": "src",
-    "lib": "lib",
-    "doc": "doc",
-    "examples": "examples",
-    "test": "test"
-  },
   "repository": {
     "type": "git",
-    "url": "https://mikeseven@github.com/mikeseven/node-webgl.git"
+    "url": "https://github.com/maghoff/osmesa-webgl.git"
   },
   "scripts": {
-    "install": "node-gyp rebuild"
+    "install": "./install.sh"
   },
   "licenses": [
     {
       "type": "BSD",
-      "url": "http://github.com/mikeseven/node-webgl/raw/master/LICENSES"
+      "url": "http://github.com/maghoff/osmesa-webgl/raw/master/LICENSES"
     }
   ],
   "dependencies": {
-    "node-glfw": ">=0.2.0",
-    "nan": "^0.8.0"
+    "nan": "^1.0.0"
+  },
+  "devDependencies": {
+    "node-image-2": "^0.5.2"
   }
 }

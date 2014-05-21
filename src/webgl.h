@@ -16,7 +16,9 @@ using namespace v8;
 namespace webgl {
 void AtExit();
 
-NAN_METHOD(Init);
+NAN_METHOD(CreateContext);
+NAN_METHOD(DestroyContext);
+NAN_METHOD(MakeCurrent);
 
 NAN_METHOD(Uniform1f);
 NAN_METHOD(Uniform2f);

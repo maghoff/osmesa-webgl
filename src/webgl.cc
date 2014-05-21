@@ -3,10 +3,8 @@
 #include <iostream>
 
 #include "webgl.h"
-#include "image.h"
 #include <node.h>
 #include <node_buffer.h>
-#include <GL/glew.h>
 
 #ifdef _WIN32
   #define  strcasestr(s, t) strstr(strupr(s), t)
@@ -91,17 +89,63 @@ inline Type* getArrayData(Local<Value> arg, int* num = NULL) {
   return data;
 }
 
-NAN_METHOD(Init) {
-  NanScope();
-  GLenum err = glewInit();
-  if (GLEW_OK != err)
-  {
-    /* Problem: glewInit failed, something is seriously wrong. */
-    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-    NanReturnValue(JS_INT(-1));
+OSMesaContext getOSMesaContext(const v8::Local<v8::Value>& value) {
+  std::cout << "getOSMesaContext" << std::endl;
+  std::cout << "value->IsNumber() " << value->IsNumber() << std::endl;
+  if (!value->IsNumber()) {
+    ThrowError("Expected context object");
+	return 0;
   }
-  //fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-  NanReturnValue(JS_INT(0));
+
+  OSMesaContext context = (OSMesaContext)value->IntegerValue(); // NOTE: This cast is unchecked
+  std::cout << "context " << context << std::endl;
+
+  return context;
+}
+
+NAN_METHOD(CreateContext) {
+  NanScope();
+
+  OSMesaContext context = OSMesaCreateContextExt(OSMESA_RGBA, 0, 0, 0, NULL);
+  std::cout << "CreateContext: " << context << std::endl;
+
+  NanReturnValue(JS_INT((intptr_t)context));
+}
+
+NAN_METHOD(DestroyContext) {
+  NanScope();
+
+  std::cout << "DestroyContext!" << std::endl;
+  OSMesaContext context = getOSMesaContext(args[0]);
+  if (!context) NanReturnValue(Undefined());
+  std::cout << "DestroyContext: " << context << std::endl;
+  OSMesaDestroyContext(context);
+
+  NanReturnValue(Undefined());
+}
+
+NAN_METHOD(MakeCurrent) {
+  NanScope();
+
+  OSMesaContext context = getOSMesaContext(args[0]);
+  if (!context) NanReturnValue(Undefined());;
+  v8::Local<v8::Object> bufferObject = args[1]->ToObject();
+  char* buffer = (char*)bufferObject->GetIndexedPropertiesExternalArrayData();
+  int bufferSize = bufferObject->GetIndexedPropertiesExternalArrayDataLength();
+  GLsizei width = args[2]->Int32Value();
+  GLsizei height = args[3]->Int32Value();
+
+  if (width < 1 || height < 1) {
+    ThrowException(JS_STR("Invalid dimensions"));
+  }
+
+  if (bufferSize < width*height*4) {
+    ThrowException(JS_STR("Buffer too small"));
+  }
+
+  OSMesaMakeCurrent(context, &buffer[0], GL_UNSIGNED_BYTE, width, height);
+
+  NanReturnValue(Undefined());
 }
 
 NAN_METHOD(Uniform1f) {
@@ -487,7 +531,7 @@ NAN_METHOD(GetShaderParameter) {
     glGetShaderiv(shader, pname, &value);
     NanReturnValue(JS_INT(static_cast<long>(value)));
   default:
-    NanThrowTypeError("GetShaderParameter: Invalid Enum");
+    return NanThrowTypeError("GetShaderParameter: Invalid Enum");
   }
 }
 
@@ -555,7 +599,7 @@ NAN_METHOD(GetProgramParameter) {
     glGetProgramiv(program, pname, &value);
     NanReturnValue(JS_INT(static_cast<long>(value)));
   default:
-    NanThrowTypeError("GetProgramParameter: Invalid Enum");
+    return NanThrowTypeError("GetProgramParameter: Invalid Enum");
   }
 }
 
@@ -839,7 +883,7 @@ NAN_METHOD(VertexAttribPointer) {
   int offset = args[5]->Int32Value();
 
   //    printf("VertexAttribPointer %d %d %d %d %d %d\n", indx, size, type, normalized, stride, offset);
-  glVertexAttribPointer(indx, size, type, normalized, stride, (const GLvoid *)offset);
+  glVertexAttribPointer(indx, size, type, normalized, stride, (const GLvoid *)(intptr_t)offset);
 
   NanReturnValue(Undefined());
 }

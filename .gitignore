@@ -6,3 +6,5 @@ Debug
 *.log
 MesaLib-*.tar.bz2
 Mesa-*
+node_modules
+test-osmesa/output.jpg
