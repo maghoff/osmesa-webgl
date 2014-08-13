@@ -17,6 +17,7 @@ void init(Handle<Object> target)
   atexit(webgl::AtExit);
 
   NODE_SET_METHOD(target, "CreateContext", webgl::CreateContext);
+  NODE_SET_METHOD(target, "CreateContextExt", webgl::CreateContextExt);
   NODE_SET_METHOD(target, "DestroyContext", webgl::DestroyContext);
   NODE_SET_METHOD(target, "MakeCurrent", webgl::MakeCurrent);
  

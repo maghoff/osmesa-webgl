@@ -112,6 +112,21 @@ NAN_METHOD(CreateContext) {
   NanReturnValue(JS_INT((intptr_t)context));
 }
 
+NAN_METHOD(CreateContextExt) {
+  NanScope();
+
+  GLenum format = args[0]->Int32Value();
+  GLint depthBits = args[1]->Int32Value();
+  GLint stencilBits = args[2]->Int32Value();
+  GLint accumBits = args[3]->Int32Value();
+  OSMesaContext shareList = getOSMesaContext(args[4]);
+
+  OSMesaContext context = OSMesaCreateContextExt(format, depthBits, stencilBits, accumBits, shareList);
+  std::cout << "CreateContextExt: " << context << std::endl;
+
+  NanReturnValue(JS_INT((intptr_t)context));
+}
+
 NAN_METHOD(DestroyContext) {
   NanScope();
 
