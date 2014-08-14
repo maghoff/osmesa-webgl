@@ -119,9 +119,15 @@ NAN_METHOD(CreateContextExt) {
   GLint depthBits = args[1]->Int32Value();
   GLint stencilBits = args[2]->Int32Value();
   GLint accumBits = args[3]->Int32Value();
-  OSMesaContext shareList = getOSMesaContext(args[4]);
 
-  OSMesaContext context = OSMesaCreateContextExt(format, depthBits, stencilBits, accumBits, shareList);
+  OSMesaContext context;
+  if(args[4]->IsNull()) {
+    context = OSMesaCreateContextExt(format, depthBits, stencilBits, accumBits, NULL);
+  } else {
+    OSMesaContext shareList = getOSMesaContext(args[4]);
+    context = OSMesaCreateContextExt(format, depthBits, stencilBits, accumBits, shareList);
+  }
+
   std::cout << "CreateContextExt: " << context << std::endl;
 
   NanReturnValue(JS_INT((intptr_t)context));
