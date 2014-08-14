@@ -17,6 +17,7 @@ namespace webgl {
 void AtExit();
 
 NAN_METHOD(CreateContext);
+NAN_METHOD(CreateContextExt);
 NAN_METHOD(DestroyContext);
 NAN_METHOD(MakeCurrent);
 
